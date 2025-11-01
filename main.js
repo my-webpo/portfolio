@@ -1,209 +1,229 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Handle Preloader
+const preloader = document.getElementById('preloader');
+if (preloader) {
+    window.addEventListener('load', () => {
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    });
+}
 
-
-    /*----------------------------------------------------------
-     * Preloader
-    ------------------------------------------------------------*/
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                preloader.classList.add('hide-preloader');
-            }, 500);
-        });
-    }
-
-    /*----------------------------------------------------------
-     * Mobile Menu Toggle
-    ------------------------------------------------------------*/
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const mobileMenuPopup = document.getElementById('mobile-menu-popup');
-    const mobileMenuClose = document.getElementById('mobile-menu-close');
-
-    if (mobileMenuToggle && mobileMenuPopup && mobileMenuClose) {
-        mobileMenuToggle.addEventListener('click', () => {
-            mobileMenuPopup.classList.add('show-menu');
-        });
-
-        mobileMenuClose.addEventListener('click', () => {
-            mobileMenuPopup.classList.remove('show-menu');
-        });
-
-        document.querySelectorAll('.mobile-nav-list a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenuPopup.classList.remove('show-menu');
-            });
-        });
-    }
-
-    /*----------------------------------------------------------
-     * Typed.js for Hero Section
-    ------------------------------------------------------------*/
-    const typedTextElement = document.querySelector('.typing-text');
-    if (typedTextElement) {
-        const typed = new Typed(typedTextElement, {
-            strings: [
-                'UI/UX Designer',
-                'Frontend Developer',
-                'Web Designer',
-                'Creative Coder'
-            ],
-            typeSpeed: 50,
-            backSpeed: 30,
-            backDelay: 1500,
-            loop: true
-        });
-    }
-
-    /*----------------------------------------------------------
-     * Portfolio Filter
-    ------------------------------------------------------------*/
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const filterValue = button.getAttribute('data-filter');
-
-            portfolioItems.forEach(item => {
-                const isHidden = item.classList.contains('hidden');
-
-                if (filterValue === 'all' || item.classList.contains(`filter-${filterValue}`)) {
-                    if (isHidden) {
-                        item.classList.remove('hidden');
-                    }
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
+// Animate elements on scroll
+function animateOnScroll() {
+    const elements = document.querySelectorAll('.animate-fade-up, .animate-fade-in');
+    elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom >= 0) {
+            if (el.classList.contains('animate-fade-up')) {
+                el.style.animation = 'fade-up 1s forwards';
+            } else if (el.classList.contains('animate-fade-in')) {
+                el.style.animation = 'fade-in 1s forwards';
+            }
+        }
     });
 
-    /*----------------------------------------------------------
-     * Scroll to Top Button
-    ------------------------------------------------------------*/
-    const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+    // New: Animate hero background
+    const heroSection = document.getElementById('hero-section');
+    if (heroSection) {
+        const rect = heroSection.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.75) {
+            heroSection.classList.add('animate-active');
+        } else {
+            heroSection.classList.remove('animate-active');
+        }
+    }
+}
+window.addEventListener('scroll', animateOnScroll);
+animateOnScroll(); // Initial check on load
 
-    if (scrollToTopBtn) {
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollToTopBtn.style.display = 'flex';
+// Add a class to the header on scroll
+window.addEventListener('scroll', function() {
+    const header = document.getElementById('main-header');
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
+// Swiper Slider Initialization
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle functionality
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', function() {
+            mainNav.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+    }
+
+    // Back-to-top button functionality with new "water fill" effect
+    const backToTopBtn = document.getElementById('back-to-top-btn');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 200) {
+                backToTopBtn.classList.add('show');
+                backToTopBtn.classList.add('scrolled-down');
             } else {
-                scrollToTopBtn.style.display = 'none';
+                backToTopBtn.classList.remove('show');
+                backToTopBtn.classList.remove('scrolled-down');
             }
+        });
+        backToTopBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
     }
 
-    /*----------------------------------------------------------
-     * AOS Initialization
-    ------------------------------------------------------------*/
-    AOS.init({
-        duration: 1000,
-        once: true,
+    const swiper = new Swiper('.mySwiper', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        breakpoints: {
+            768: {
+                slidesPerView: 2,
+            },
+            1024: {
+                slidesPerView: 3,
+            }
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        watchSlidesProgress: true,
+        autoHeight: true,
     });
 
-    /*----------------------------------------------------------
-     * Countdown Timer for Coming Soon Page
-    ------------------------------------------------------------*/
-    const daysElement = document.getElementById("days");
-    const hoursElement = document.getElementById("hours");
-    const minutesElement = document.getElementById("minutes");
-    const secondsElement = document.getElementById("seconds");
+    /* ========================================================= */
+    /* === Typing/Deleting Effect for Demos Section === */
+    /* ========================================================= */
+    const typingElement = document.querySelector('.typing-text-effect');
+    if (typingElement) {
+        const textArray = ["Multi-site", "Versatile", "Different Designs", "Mega Menu"];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
 
-    if (daysElement && hoursElement && minutesElement && secondsElement) {
-        const countDownDate = new Date("Oct 26, 2025 15:37:25").getTime();
+        function typeText() {
+            const currentText = textArray[textIndex];
+            let displayText;
 
-        const x = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countDownDate - now;
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            daysElement.innerHTML = days < 10 ? "0" + days : days;
-            hoursElement.innerHTML = hours < 10 ? "0" + hours : hours;
-            minutesElement.innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            secondsElement.innerHTML = seconds < 10 ? "0" + seconds : seconds;
-
-            if (distance < 0) {
-                clearInterval(x);
-                const countdownCompletedElement = document.getElementById("countdown");
-                if (countdownCompletedElement) {
-                    countdownCompletedElement.innerHTML = "LAUNCHED!";
-                }
+            if (isDeleting) {
+                displayText = currentText.substring(0, charIndex - 1);
+                typingElement.style.borderRight = '2px solid var(--primary-color)';
+            } else {
+                displayText = currentText.substring(0, charIndex + 1);
+                typingElement.style.borderRight = '2px solid var(--primary-color)';
             }
-        }, 1000);
+
+            typingElement.textContent = displayText;
+
+            if (!isDeleting && charIndex === currentText.length) {
+                setTimeout(() => isDeleting = true, 1000);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % textArray.length;
+            }
+
+            charIndex += isDeleting ? -1 : 1;
+            setTimeout(typeText, isDeleting ? 50 : 150);
+        }
+
+        setTimeout(typeText, 1000);
+    }
+
+    // Snowfall Effect - Modified to be a toggle
+    const snowfallContainer = document.getElementById('snowfall-container');
+    const snowfallToggleBtn = document.getElementById('snowfall-toggle-btn');
+    let snowfallInterval = null;
+
+    const createSnowflake = () => {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+
+        const startX = Math.random() * window.innerWidth;
+        snowflake.style.left = `${startX}px`;
+
+        const size = Math.random() * 5 + 5;
+        snowflake.style.width = `${size}px`;
+        snowflake.style.height = `${size}px`;
+
+        const duration = Math.random() * 8 + 5;
+        const delay = Math.random() * 0.5;
+
+        snowflake.style.animationDuration = `${duration}s`;
+        snowflake.style.animationDelay = `${delay}s`;
+
+        snowfallContainer.appendChild(snowflake);
+
+        setTimeout(() => {
+            snowflake.remove();
+        }, (duration + delay) * 1000);
+    };
+
+    const toggleSnowfall = () => {
+        if (snowfallInterval) {
+            clearInterval(snowfallInterval);
+            snowfallInterval = null;
+            snowfallContainer.innerHTML = '';
+            snowfallToggleBtn.innerHTML = '<i class="fas fa-cog"></i>';
+            snowfallToggleBtn.classList.remove('active');
+        } else {
+            const isMobile = window.innerWidth <= 768;
+            const interval = isMobile ? 600 : 100; // 300ms for mobile, 100ms for desktop
+            snowfallInterval = setInterval(createSnowflake, interval);
+            snowfallToggleBtn.innerHTML = '<i class="fas fa-fan"></i>';
+            snowfallToggleBtn.classList.add('active');
+        }
+    };
+
+    if (snowfallToggleBtn) {
+        snowfallToggleBtn.addEventListener('click', toggleSnowfall);
+        toggleSnowfall();
     }
 
     /*----------------------------------------------------------
-        Dark Mode Functionality
+       Theme Toggle (Light/Dark Mode)
     ------------------------------------------------------------*/
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const body = document.body;
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        body.classList.add(savedTheme);
+        if (savedTheme === 'light-mode') {
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    } else {
+        // Set a default theme if none is saved (optional, can be 'dark-mode' or nothing)
+        body.classList.add('dark-mode');
+        themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    }
 
     if (themeToggleBtn) {
-        const toggleDarkMode = () => {
-            const body = document.body;
-            const icon = themeToggleBtn.querySelector('i');
-
-            body.classList.toggle('dark-mode');
-
+        themeToggleBtn.addEventListener('click', () => {
             if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-                if (icon) {
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
-                }
-            } else {
-                localStorage.setItem('theme', 'light');
-                if (icon) {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                }
-            }
-        };
-
-        const loadTheme = () => {
-            const savedTheme = localStorage.getItem('theme');
-            const body = document.body;
-            const icon = themeToggleBtn.querySelector('i');
-
-            // This is the corrected logic. It prioritizes the saved preference.
-            if (savedTheme === 'dark') {
-                body.classList.add('dark-mode');
-                if (icon) {
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
-                }
-            } else if (savedTheme === 'light') {
                 body.classList.remove('dark-mode');
-                if (icon) {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                }
+                body.classList.add('light-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light-mode');
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark-mode');
             }
-            // If there's no saved preference, it will check the system preference
-            else {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (prefersDark) {
-                    body.classList.add('dark-mode');
-                    if (icon) {
-                        icon.classList.remove('fa-moon');
-                        icon.classList.add('fa-sun');
-                    }
-                }
-            }
-        };
-
-        // Load the saved theme on page load
-        loadTheme();
-
-        // Add event listener to the toggle button
-        themeToggleBtn.addEventListener('click', toggleDarkMode);
+        });
     }
 });
